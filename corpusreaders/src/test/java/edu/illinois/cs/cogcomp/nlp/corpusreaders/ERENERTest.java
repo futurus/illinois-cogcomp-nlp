@@ -2,14 +2,25 @@ package edu.illinois.cs.cogcomp.nlp.corpusreaders;
 
 import edu.illinois.cs.cogcomp.core.datastructures.ViewNames;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
+import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Sentence;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.View;
+import edu.illinois.cs.cogcomp.core.utilities.configuration.ResourceManager;
 import edu.illinois.cs.cogcomp.nlp.corpusreaders.ereReader.ERENerReader;
+import edu.illinois.cs.cogcomp.nlp.utility.TokenizerTextAnnotationBuilder;
+import edu.illinois.cs.cogcomp.annotation.TextAnnotationBuilder;
+import edu.illinois.cs.cogcomp.ner.NERAnnotator;
+import edu.illinois.cs.cogcomp.ner.LbjTagger.*;
+
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.io.IOException;
+import java.util.Properties;
 
 public class ERENERTest {
     private static final String NAME = ERENERTest.class.getCanonicalName();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         ERENerReader ereReader = null;
         boolean addNominalMentions = true;
         String dataPath = "src/test/resources/ERE_NER/";
@@ -23,23 +34,59 @@ public class ERENERTest {
                     + e.getMessage());
         }
 
-        TextAnnotation output = ereReader.next();
+        TextAnnotation output = null;
         View nerEre = null;
-        if (addNominalMentions) {
-            assert (output.hasView(ViewNames.MENTION_ERE));
+        View ner = null;
+        HashMap<Sentence, ArrayList<Constituent>> s2e = null;
+        int nDoc = 5, i = 0;
+
+        while (ereReader.hasNext() && i++ < nDoc) {
+            output = ereReader.next();
             nerEre = output.getView(ViewNames.MENTION_ERE);
-        } else {
-            assert (output.hasView(ViewNames.NER_ERE));
-            nerEre = output.getView(ViewNames.NER_ERE);
-        }
+            s2e = new HashMap<> ();
+            ArrayList<Constituent> l = null;
 
-        for (Constituent c : nerEre.getConstituents()) {
-            System.out.println(c.getSurfaceForm());
+//            try {
+//                NERAnnotator co = new NERAnnotator(ViewNames.NER_CONLL);
+//                co.doInitialize();
+//                co.addView(output);
+//                System.out.println(output.getView(ViewNames.NER_CONLL));
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
 
-            for (String k : c.getAttributeKeys()) {
-                System.out.print(k + ": " + c.getAttribute(k) + "\n");
+            for (Constituent c : nerEre.getConstituents()) {
+                Sentence s = output.getSentence(output.getSentenceId(c));
+
+                if (s2e.containsKey(s)) {
+                    l = s2e.get(s);
+
+                } else {
+                    l = new ArrayList<Constituent>();
+
+                }
+                l.add(c);
+                s2e.put(s, l);
             }
-            System.out.println("------------------------------------");
+
+            System.out.println(s2e.size());
+
+            for (Sentence s : output.sentences()) {
+                System.out.println("\"" + s + "\": ");
+
+                if (s2e.get(s) != null) {
+                    for (Constituent c : s2e.get(s)) {
+                        System.out.print("\n\t'" + c.getSurfaceForm() + "'");
+                        System.out.print("\n\t\t" + c.getAttribute("EntityMentionType"));
+                        System.out.print("\n\t\t" + c.getAttribute("EntitySpecificity") + "\n");
+                    }
+                }
+
+                System.out.println("------------------------------------");
+            }
+
+
+            System.out.println("------------------++++++------------------");
         }
 
 //        helpful methods
