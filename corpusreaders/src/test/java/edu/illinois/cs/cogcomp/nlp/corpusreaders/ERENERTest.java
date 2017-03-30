@@ -9,8 +9,8 @@ import edu.illinois.cs.cogcomp.core.utilities.configuration.ResourceManager;
 import edu.illinois.cs.cogcomp.nlp.corpusreaders.ereReader.ERENerReader;
 import edu.illinois.cs.cogcomp.nlp.utility.TokenizerTextAnnotationBuilder;
 import edu.illinois.cs.cogcomp.annotation.TextAnnotationBuilder;
-import edu.illinois.cs.cogcomp.ner.NERAnnotator;
-import edu.illinois.cs.cogcomp.ner.LbjTagger.*;
+/*import edu.illinois.cs.cogcomp.ner.NERAnnotator;
+import edu.illinois.cs.cogcomp.ner.LbjTagger.*;*/
 
 import java.util.HashMap;
 import java.util.ArrayList;

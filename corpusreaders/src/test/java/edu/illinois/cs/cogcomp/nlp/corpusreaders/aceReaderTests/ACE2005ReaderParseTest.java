@@ -42,6 +42,8 @@ public class ACE2005ReaderParseTest {
         StringBuilder sectionJSON = new StringBuilder();
 
         sectionJSON.append("{");
+        sectionJSON.append("\n\t\"EntityType\": \"PER\",");
+        sectionJSON.append("\n\t\"EntitySubtype\": \"Individual\",");
         sectionJSON.append("\n\t\"documents\": [");
 
         StringBuilder docJSON = new StringBuilder();
@@ -52,7 +54,7 @@ public class ACE2005ReaderParseTest {
             SpanLabelView coreferenceView = (SpanLabelView) doc.getView(ViewNames.MENTION_ACE);
 //            CoreferenceView coreferenceView = (CoreferenceView) doc.getView(ViewNames.COREF_HEAD);
             HashMap<Sentence, ArrayList<Constituent>> s2e = new HashMap<>();
-            String[] attrs = new String[]{"EntityType", "EntityMentionType", "EntityMentionLDCType", "EntitySubtype"};
+            String[] attrs = new String[]{/*"EntityType", */"EntityMentionType", "EntityMentionLDCType"/*, "EntitySubtype"*/};
 
             for (Constituent c : coreferenceView.getConstituents()) {
                 if (!c.getAttribute("EntityType").equals("PER")
